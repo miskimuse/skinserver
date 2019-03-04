@@ -2,8 +2,9 @@ var router = require('express').Router();
 var sequelize = require('../db');
 var User = sequelize.import('../models/user');
 var Skin = sequelize.import('../models/skin');
+var validateSession = require("../middleware/validate-session");
 
-router.get('/', function (req, res){
+router.get('/', (req, res)=> {
     let userid = req.user.id;
 
     Skin.findAll({where: {owner: userid}})
@@ -18,11 +19,11 @@ router.get('/', function (req, res){
 })
 
 
-router.post('/', function (req, res){
-    let cleanser = req.body.skin.cleanser;
-    let exfoliant = req.body.skin.exfoliant;
-    let moisturizer = req.body.skin.moisturizer;
-    let result = req.body.skin.result;
+router.post('/create',validateSession, (req, res) => {
+    let cleanser = req.body.cleanser;
+    let exfoliant = req.body.exfoliant;
+    let moisturizer = req.body.moisturizer;
+    let result = req.body.result;
     let owner = req.user.id;
 
     Skin
@@ -45,7 +46,7 @@ router.post('/', function (req, res){
     )
 })
 
-router.get('/:id', function(req, res){
+router.get('/:id',validateSession, (req, res) => {
     let data = req.params.id;
     let userid = req.user.id;
 
@@ -56,31 +57,34 @@ router.get('/:id', function(req, res){
             function findOneSuccess(data){
                 res.json(data);
             },
-            function findOneError(err){
+            function findOneError(err){ 
                 res.send(500, err.message);
             }
         )
 })
 
-router.put('/:id', function(req, res){
+router.put('/:id', validateSession, (req, res) =>{
     let updateId = req.params.id;
-    let updateDesc = req.body.log.description;
-    let updateDef = req.body.log.definition;
-    let updateRes = req.body.log.result;
-    let updateOwner = req.user.id;
+    let updateCln = req.body.cleanser;
+    let updateExf = req.body.exfoliant;
+    let updateMst = req.body.moisturizer;
+    let updateRes = req.body.result;
+    let updateOwner = req.user.id
 
-    Log
+    Skin
         .update({
-            description: updateDesc,
-            definition: updateDef,
+            cleanser: updateCln,
+            exfoliant: updateExf,
+            moisturizer: updateMst,
             result: updateRes,
             owner: updateOwner
         }, {where: {id: updateId}})
         .then(
             function updateSuccess(){
                 res.json({
-                    description: updateDesc,
-                    definition: updateDef,
+                    cleanser: updateCln,
+                    exfoliant: updateExf,
+                    moisturizer: updateMst,
                     result: updateRes,
                     owner: updateOwner
                 })
@@ -91,17 +95,17 @@ router.put('/:id', function(req, res){
         )
 })
 
-router.delete('/:id', function (req, res){
+router.delete('/:id', validateSession,(req, res) => {
     let data = req.params.id;
     let userId = req.user.id;
 
-    Log 
+    Skin 
         .destroy({
             where: {id: data, owner: userId}
         })
         .then(
             function deleteLogSuccess(){
-                res.send("you removed a log");
+                res.send("deleted");
             },
             function deleteLogError(err){
                 res.send(500, err.message);

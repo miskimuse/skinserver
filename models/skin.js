@@ -1,40 +1,23 @@
-// module.exports = (sequelize, DataTypes) => {
-//         const skin = sequelize.define('skin', {
-//           nameOfSkin: {
-//             type: DataTypes.STRING,
-//             allowNull: false
-//           }, 
-//           baseOfSkin: {
-//             type: DataTypes.STRING,
-//             allowNull: false
-//           }, 
-//           type: {
-//             type: DataTypes.STRING,
-//             allowNull: false
-//           },
-//         })
-      
-//         return log;
-//       }
 module.exports = (sequelize, DataTypes) => {
   const Skin = sequelize.define ('skin', {
     cleanser: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     exfoliant: {
       type: DataTypes.STRING,
-      allowNull: false 
+      allowNull: true 
     },
     moisturizer: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true 
+      allowNull: true
     },
     result: {
       type: DataTypes.STRING,
-      allowNull: false 
-    }
+      allowNull: true 
+    },
+    owner: DataTypes.INTEGER
+    
   })
 
   return Skin;
